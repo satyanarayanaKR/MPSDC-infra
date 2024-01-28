@@ -1,0 +1,60 @@
+---
+- name: Check whether application and database are running
+  ansible.builtin.script: /root/appcheck.sh
+  args:
+    executable: /bin/bash
+  ignore_errors: true
+  register: application_process_check
+- name: Fail if application is running
+  ansible.builtin.fail:
+    msg: '{{ inventory_hostname }} has a running application. Please stop the application and then proceed with patching.'
+  when: application_process_check.stdout == "process is running"
+
+- name: Applying patches to the server
+  ansible.builtin.yum:
+    name: kernel
+    state: latest
+  when: application_process_check.stdout != "Process is running" #and (ansible_distribution == "CentOS" or ansible_distribution == "RedHat")
+  register: patch_update
+
+- name: Display updated packages
+  ansible.builtin.debug:
+    msg: >-
+      IP: {{ inventory_hostname }}
+      Message: {{ patch_update.msg }}
+      Changed: {{ patch_update.changed }}
+  register: patch_output
+- name: Copying
+  ansible.builtin.template:
+    src: file.j2
+    dest: "/root/output.json"
+- name: Check if reboot required
+  ansible.builtin.shell: >
+    KERNEL_NEW=$(rpm -q --last kernel |head -1 | awk '{print $1}'|sed 's/kernel-//');
+    KERNEL_NOW=$(uname -r);
+    if [[ $KERNEL_NEW != $KERNEL_NOW ]]; then
+      echo "reboot needed";
+    else
+      echo "reboot not needed";
+    fi
+  ignore_errors: true
+  register: reboot_statu
+- name: Restart the system if reboot is needed
+  ansible.builtin.command: shutdown -r +1 "Rebooting System After Patching"
+  async: 0
+  poll: 0
+  when: reboot_status.stdout == "reboot needed"
+  register: reboot_started
+  ignore_errors: true
+- name: Wait for 1 minute for the system to come up
+  ansible.builtin.pause:
+    minutes: 
+- name: Check the system status
+  local_action: shell ansible -u ansible -m ping {{ inventory_hostname }}
+  register: result
+  until: result.rc == 0
+  retries: 30
+  delay: 1
+- name: Check the client uptime
+  ansible.builtin.shell: uptime
+

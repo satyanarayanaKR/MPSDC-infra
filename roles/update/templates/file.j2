@@ -1,0 +1,6 @@
+IP,Patch status
+{%for host in groups['all'] %}
+{{ host }},{{ hostvars[host].patch_update.msg }} Changed: {{ hostvars[host].patch_update.changed }}
+{% if not loop.last %}{% endif %}
+{% endfor %}
+

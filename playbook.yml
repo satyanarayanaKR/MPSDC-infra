@@ -1,0 +1,36 @@
+---
+- name: Actvities on openstack platform
+  hosts: localhost
+  vars_files:
+  - "{{ playbook_dir }}/vars/vm_details.yml"
+  tasks:
+    - name: Adding hosts to the list
+      ansible.builtin.add_host:
+        name: "{{ item.ip }}"
+        group: target_hosts
+      loop: "{{ vm_details }}"
+
+    - debug: var=target_hosts
+
+- name: Actvities on openstack platform
+  hosts: target_hosts
+  gather_facts: false
+  # vars_files:
+  # - "{{ playbook_dir }}/vars/var.yml"
+  # - "{{ playbook_dir }}/vars/default.yml"
+  tasks:
+    - name: Disk space checking 
+      shell: ip -br a
+      register: out
+
+    - debug: var=out.stdout_lines
+    #   import_role: 
+    #     name: disk_space_checking
+
+    # - name: registration 
+    #   import_role: 
+    #     name: registration
+
+    # - name: patch update
+    #   import_role: 
+    #     name: update
