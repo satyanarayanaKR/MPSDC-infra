@@ -15,22 +15,18 @@
 - name: Actvities on openstack platform
   hosts: target_hosts
   gather_facts: false
-  # vars_files:
-  # - "{{ playbook_dir }}/vars/var.yml"
-  # - "{{ playbook_dir }}/vars/default.yml"
+  vars_files:
+  - "{{ playbook_dir }}/vars/var.yml"
+  - "{{ playbook_dir }}/vars/default.yml"
   tasks:
     - name: Disk space checking 
-      shell: ip -br a
-      register: out
+      import_role: 
+        name: disk_space_checking
 
-    - debug: var=out.stdout_lines
-    #   import_role: 
-    #     name: disk_space_checking
+    - name: registration 
+      import_role: 
+        name: registration
 
-    # - name: registration 
-    #   import_role: 
-    #     name: registration
-
-    # - name: patch update
-    #   import_role: 
-    #     name: update
+    - name: patch update
+      import_role: 
+        name: update

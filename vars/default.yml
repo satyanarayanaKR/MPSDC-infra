@@ -1,0 +1,6 @@
+role:
+  - linux_disk_space: false
+  - linux_registration: false
+  - linux_update: false
+  - win_update: false
+  - win_disk_space: false
