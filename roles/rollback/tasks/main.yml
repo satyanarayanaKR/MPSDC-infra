@@ -1,0 +1,26 @@
+---
+# tasks file for rollback
+
+- name: Check Currently Booted Kernel
+  command: "uname -r"
+  register: current_kernel_versio
+- name: Debug - Display Currently Booted Kernel
+  debug:
+    var: current_kernel_version.stdou
+- name: List Installed Kernels
+  command: "grubby --info=ALL | egrep -i 'index|title'"
+  register: installed_kernel
+- name: Debug - Display Installed Kernels
+  debug:
+    var: installed_kernels.stdout_line
+- name: Get Current Default Kernel Index
+  command: "grubby --default-index"
+  register: current_default_inde
+- name: Debug - Display Current Default Kernel Index
+  debug:
+    var: current_default_index.stdout
+- name: Set Default Kernel if Needed
+  command: "grubby --set-default-index=1
+- name: Rebooting the system
+  command: "init 6"
+
