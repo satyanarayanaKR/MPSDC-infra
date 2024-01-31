@@ -23,10 +23,16 @@
       import_role: 
         name: disk_space_checking
 
+    - name: Pre checking the updates
+      import_role:
+        name: pre-checks
+
+    - name: patch update
+      import_role:
+        name: update
+
     - name: registration 
       import_role: 
         name: registration
 
-    - name: patch update
-      import_role: 
-        name: update
+    

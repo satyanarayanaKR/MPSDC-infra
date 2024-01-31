@@ -1,0 +1,6 @@
+---
+- name: Rolling back to previous version
+  hosts: localhost
+  connection: local
+  roles:
+    - rollback

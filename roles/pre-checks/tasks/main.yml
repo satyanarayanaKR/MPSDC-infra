@@ -1,0 +1,21 @@
+---
+# tasks file for MPSDC_Ops/roles/pre-checks
+- name: get list of packages
+  shell: yum check-update | head -n -2 | tail -n +4 | awk '{print $1}' | cut -d '.' -f1
+  register: package
+  ignore_errors: tru
+- name: get list of package versions
+  shell: yum check-update | head -n -2 | tail -n +4 | awk '{print $2}'
+  register: version
+  ignore_errors: tru
+- name: create list of packages and versions
+  set_fact:
+    package_list: "{{ package.stdout_lines | zip_longest(version.stdout_lines, fillvalue='N/A') | list }}"
+- debug:
+    var: package_list
+- name: creating file having data
+  template:
+    src: "{{ playbook_dir }}/data.j2"
+    dest: "{{ playbook_dir }}/pack.xml"
+        
+

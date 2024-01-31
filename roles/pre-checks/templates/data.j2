@@ -1,0 +1,5 @@
+list:
+{% for i in package_list %}
+  - package: "{{ i[0] }}" 
+    version: "{{ i[1] }}"
+{% endfor %}

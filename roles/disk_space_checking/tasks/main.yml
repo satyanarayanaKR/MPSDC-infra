@@ -9,5 +9,5 @@
     msg: "Available disk space on /: {{ freespace_gb }} GB"
 - name: Fail if there is not enough space
   ansible.builtin.fail:
-    msg: "Host localhost does not have enough disk space on /"
+    msg: "Target host  does not have enough disk space on /"
   when: "{{ freespace_gb | float < 20 }}"

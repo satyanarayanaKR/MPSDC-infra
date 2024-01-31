@@ -1,6 +1,6 @@
 ---
 - name: Check whether application and database are running
-  ansible.builtin.script: /root/appcheck.sh
+  ansible.builtin.script: appcheck.sh
   args:
     executable: /bin/bash
   ignore_errors: true
@@ -38,7 +38,7 @@
       echo "reboot not needed";
     fi
   ignore_errors: true
-  register: reboot_statu
+  register: reboot_status
 - name: Restart the system if reboot is needed
   ansible.builtin.command: shutdown -r +1 "Rebooting System After Patching"
   async: 0
